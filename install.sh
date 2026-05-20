@@ -4,8 +4,11 @@
 
 # # Install udev rules
 RULE_CONTENT=$(cat <<EOL
-SUBSYSTEM=="tty", KERNELS=="1-4.1", SYMLINK+="esp"
-SUBSYSTEM=="tty", KERNELS=="1-4.2", SYMLINK+="pixhawk"
+SUBSYSTEM=="tty", KERNELS=="1-5", SYMLINK+="esp"
+SUBSYSTEM=="tty", KERNELS=="1-3.2", SYMLINK+="lidar"
+SUBSYSTEM=="tty", KERNELS=="1-3.1", SYMLINK+="px4"
+
+
 KERNEL=="event*", SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="028e", SYMLINK+="/input/haptics"
 KERNEL=="js*", SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="028e", SYMLINK+="input/joy"
 EOL

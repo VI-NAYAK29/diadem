@@ -1,0 +1,79 @@
+ekf_filter_node:
+    ros__parameters:
+        use_sim_time: true
+        # 50Hz frequency: Critical for high-speed (3m/s) navigation. Small time steps (dt=20ms)
+        # reduce integration errors and prevent position overshoot during rapid braking.
+        frequency: 50.0
+        sensor_timeout: 0.1
+        # Set to false to disable state extrapolation. Extrapolation during minor simulator or
+        # network delays causes the robot estimate to shoot forward and snap back visually.
+        predict_to_current_time: false
+        # planar ground robot: locking z, roll, pitch, and their rates to 0 prevents physics engine
+        # jitter and roundoff errors from corrupting planar x, y, yaw estimates.
+        two_d_mode: true
+        map_frame:       map
+        odom_frame:      odom
+        base_link_frame: base_link
+        # Continuous local odometry loop frame. AMCL independently handles global corrections
+        # via the map->odom transform, preventing frame coordinate conflicts.
+        world_frame:     odom
+        transform_time_offset: 0.0
+        transform_timeout:     0.0
+        publish_tf: true
+        publish_acceleration: false
+
+        odom0: /odom
+        # Fuses ONLY velocities (vx, vy). Fusing absolute wheel position (x, y) or wheel orientation (yaw)
+        # on skid-steer robots introduces catastrophic drift because wheels slip heavily during turns.
+        # Fusing only velocity lets the EKF integrate them internally using the perfect, slip-free IMU heading.
+        odom0_config: [false, false, false,
+                       false, false, false,
+                       true,  true, false,
+                       false, false, false,
+                       false, false, false]
+        odom0_queue_size:     10
+        odom0_nodelay:        true
+        odom0_differential:   false
+        odom0_relative:       false
+        odom0_pose_rejection_threshold:  3.0
+        odom0_twist_rejection_threshold: 3.0
+
+        imu0: /imu/data
+        # Fuses absolute orientation (yaw) and angular velocity (vyaw).
+        # We EXCLUDE linear acceleration (ax, ay, az = false) because Gazebo accelerometer noise
+        # integrates twice into position, quickly compounding into massive drift at high speeds.
+        imu0_config: [false, false, false,
+                      false, false, true,
+                      false, false, false,
+                      false, false, true,
+                      false, false, false]
+        imu0_nodelay:       true
+        imu0_differential:  false
+        # imu0_relative: true ensures orientation is relative to the starting posture,
+        # establishing an arbitrary 0-heading starting state and avoiding yaw offset snaps.
+        imu0_relative:      true
+        imu0_queue_size:    50
+        imu0_remove_gravitational_acceleration: true
+        imu0_pose_rejection_threshold:  10.0
+        imu0_twist_rejection_threshold: 10.0
+
+        # Process Noise Covariance Tuning:
+        # We raised the diagonal velocity values (indices 6 and 7 corresponding to vx, vy) to 0.1.
+        # This tells the EKF that the robot's velocity is highly volatile. When the robot brakes
+        # hard from 3m/s to 0m/s, the filter quickly trusts the incoming 0-velocity sensor reports
+        # instead of sluggishly smoothing the state, successfully eliminating linear overshoot.
+        process_noise_covariance: [0.05,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.05,  0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.06,  0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.06,  0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.1,  0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.1,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.025,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.01,  0.0,   0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.01,  0.0,   0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.04, 0.0,   0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.03,  0.0,
+                                   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,    0.0,    0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.03]

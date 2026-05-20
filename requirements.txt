@@ -1,4 +1,3 @@
-iw
 ros-humble-joint-state-publisher 
 ros-humble-robot-state-publisher 
 ros-humble-teleop-twist-keyboard  
@@ -8,3 +7,18 @@ ros-humble-urdf
 ros-humble-mavros
 ros-humble-mavros-msgs
 ros-humble-gazebo-plugins
+ros-humble-usb-cam
+ros-humble-nav2-amcl
+ros-humble-nav2-map-server
+ros-humble-nav2-bringup
+ros-humble-urdf
+ros-humble-xacro
+ros-humble-rqt-image-view
+ros-humble-slam-toolbox
+ros-humble-joint-state-publisher
+ros-humble-robot-state-publisher
+ros-humble-slam-toolbox
+ros-humble-nav2-dwb-controller
+ros-humble-joint-state-publisher-gui
+ros-humble-v4l2-camera
+ros-humble-cartographer-ros

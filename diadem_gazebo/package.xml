@@ -3,11 +3,22 @@
 <package format="3">
   <name>diadem_gazebo</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="kartiksoni@rigbetellabs.com">kartik</maintainer>
+  <description>Diadem robot – Ignition Fortress simulation package</description>
+  <maintainer email="vinayaknayak@rigbetellabs.com">Vinayak</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Launch infrastructure -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!-- Ignition Fortress integration (replaces gazebo_ros) -->
+  <exec_depend>ros_gz_sim</exec_depend>       <!-- spawn_entity (create) -->
+  <exec_depend>ros_gz_bridge</exec_depend>    <!-- parameter_bridge       -->
+
+  <!-- Robot description -->
+  <exec_depend>diadem_description</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

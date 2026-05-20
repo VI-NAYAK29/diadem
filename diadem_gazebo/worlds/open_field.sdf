@@ -1,0 +1,346 @@
+<?xml version="1.0" ?>
+
+<sdf version='1.8'>
+  <world name='open_field'>
+
+    <!-- REQUIRED IGNITION SYSTEM PLUGINS -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <!-- Sensors system required for lidar / IMU to publish -->
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"/>
+
+    <!-- LIGHTING  (no cast_shadows → GPU-light)-->
+    <light name='sun' type='directional'>
+      <cast_shadows>0</cast_shadows>
+      <pose>0 0 20 0 -0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.3 0.3 0.3 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.3 0.1 -0.9</direction>
+    </light>
+
+    <!-- PHYSICS  (1 kHz, RTF=1) -->
+    <physics name='default_physics' default='0' type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- GROUND  — 60 × 60 m paved surface -->
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>60 60</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>60 60</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.55 0.55 0.50 1</ambient>
+            <diffuse>0.55 0.55 0.50 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name='perimeter_walls'>
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- South wall  y = -30 -->
+      <link name='wall_south'>
+        <pose>0 -30 1.5 0 0 0</pose>
+        <collision name='col'>
+          <geometry><box><size>60.4 0.2 3.0</size></box></geometry>
+        </collision>
+        <visual name='vis'>
+          <geometry><box><size>60.4 0.2 3.0</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+
+      <!-- North wall  y = +30 -->
+      <link name='wall_north'>
+        <pose>0 30 1.5 0 0 0</pose>
+        <collision name='col'>
+          <geometry><box><size>60.4 0.2 3.0</size></box></geometry>
+        </collision>
+        <visual name='vis'>
+          <geometry><box><size>60.4 0.2 3.0</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+
+      <!-- West wall  x = -30 -->
+      <link name='wall_west'>
+        <pose>-30 0 1.5 0 0 0</pose>
+        <collision name='col'>
+          <geometry><box><size>0.2 60.4 3.0</size></box></geometry>
+        </collision>
+        <visual name='vis'>
+          <geometry><box><size>0.2 60.4 3.0</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+
+      <!-- East wall  x = +30 -->
+      <link name='wall_east'>
+        <pose>30 0 1.5 0 0 0</pose>
+        <collision name='col'>
+          <geometry><box><size>0.2 60.4 3.0</size></box></geometry>
+        </collision>
+        <visual name='vis'>
+          <geometry><box><size>0.2 60.4 3.0</size></box></geometry>
+          <material><ambient>0.8 0.8 0.75 1</ambient><diffuse>0.8 0.8 0.75 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- INNER RING 4 bollards at ±5-6 m -->
+    <!-- North 6 m -->
+    <model name='inner_north'>
+      <static>true</static>
+      <pose>0 6 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>1.0 0.8 0.0 1</ambient><diffuse>1.0 0.8 0.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- South 6 m -->
+    <model name='inner_south'>
+      <static>true</static>
+      <pose>0 -6 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>1.0 0.8 0.0 1</ambient><diffuse>1.0 0.8 0.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- East 6 m -->
+    <model name='inner_east'>
+      <static>true</static>
+      <pose>6 0 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>1.0 0.8 0.0 1</ambient><diffuse>1.0 0.8 0.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- West 6 m -->
+    <model name='inner_west'>
+      <static>true</static>
+      <pose>-6 0 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.2</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>1.0 0.8 0.0 1</ambient><diffuse>1.0 0.8 0.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- OUTER RING 4 bollards at ±12-16 m -->
+    <model name='bollard_a'>
+      <static>true</static>
+      <pose>10 12 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bollard B: NW — moved to 14 m -->
+    <model name='bollard_b'>
+      <static>true</static>
+      <pose>-10 10 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bollard C: SE ~17.2 m — within range ✓ -->
+    <model name='bollard_c'>
+      <static>true</static>
+      <pose>12 -10 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bollard D: SW ~17.2 m — within range ✓ -->
+    <model name='bollard_d'>
+      <static>true</static>
+      <pose>-10 -12 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.25</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Box E: moved to 12 m east (was 22 m — outside lidar) -->
+    <model name='box_e'>
+      <static>true</static>
+      <pose>12 2 0.75 0 0 0.5</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>2.0 1.0 1.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>2.0 1.0 1.5</size></box></geometry>
+          <material><ambient>0.2 0.4 0.8 1</ambient><diffuse>0.2 0.4 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Box F: moved to 13 m west (was 20 m — outside lidar) -->
+    <model name='box_f'>
+      <static>true</static>
+      <pose>-12 -4 0.75 0 0 -0.3</pose>
+      <link name='link'>
+        <collision name='col'><geometry><box><size>2.0 1.0 1.5</size></box></geometry></collision>
+        <visual name='vis'>
+          <geometry><box><size>2.0 1.0 1.5</size></box></geometry>
+          <material><ambient>0.2 0.4 0.8 1</ambient><diffuse>0.2 0.4 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bollard G: moved to 14 m north (was 22 m — outside lidar) -->
+    <model name='bollard_g'>
+      <static>true</static>
+      <pose>3 14 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Bollard H: moved to 14 m south (was 22 m — outside lidar) -->
+    <model name='bollard_h'>
+      <static>true</static>
+      <pose>-4 -14 0.6 0 0 0</pose>
+      <link name='link'>
+        <collision name='col'><geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry></collision>
+        <visual name='vis'>
+          <geometry><cylinder><radius>0.3</radius><length>1.2</length></cylinder></geometry>
+          <material><ambient>0.9 0.3 0.1 1</ambient><diffuse>0.9 0.3 0.1 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- GUI CAMERA  — top-down view of the full 60×60 m field -->
+    <gui fullscreen="0">
+      <plugin filename="GzScene3D" name="3D View">
+        <gz-gui>
+          <title>3D View</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="string" key="state">docked</property>
+        </gz-gui>
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.5 0.5 0.5</ambient_light>
+        <background_color>0.4 0.6 0.9</background_color>
+        <!-- Camera looking straight down from 80 m — shows entire 60×60 field -->
+        <camera_pose>0 0 80 0 1.5707 0</camera_pose>
+      </plugin>
+
+      <plugin filename="WorldControl" name="World control">
+        <gz-gui>
+          <title>World control</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">72</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="left" target="left"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <play_pause>true</play_pause>
+        <step>true</step>
+        <start_paused>false</start_paused>
+      </plugin>
+
+      <plugin filename="WorldStats" name="World stats">
+        <gz-gui>
+          <title>World stats</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">110</property>
+          <property type="double" key="width">290</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="right" target="right"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <sim_time>true</sim_time>
+        <real_time>true</real_time>
+        <real_time_factor>true</real_time_factor>
+        <iterations>true</iterations>
+      </plugin>
+    </gui>
+
+  </world>
+</sdf>
