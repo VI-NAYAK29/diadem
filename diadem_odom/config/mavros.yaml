@@ -1,0 +1,59 @@
+# Minimalist MAVROS configuration for GPS and IMU only
+/**:
+  ros__parameters:
+    startup_px4_usb_quirk: false
+
+# Required system plugins
+/**/sys:
+  ros__parameters:
+    heartbeat_rate: 1.0
+    conn_timeout: 10.0
+
+/**/time:
+  ros__parameters:
+    timesync_mode: MAVLINK
+    timesync_rate: 10.0
+
+# Global position (GPS)
+/**/global_position:
+  ros__parameters:
+    frame_id: "map"
+    child_frame_id: "base_link"
+    tf.send: false  # Explicitly disable TF
+    # Disable all other TF options
+    tf.frame_id: "map"
+    tf.global_frame_id: "earth"
+    tf.child_frame_id: "base_link"
+
+# IMU
+/**/imu:
+  ros__parameters:
+    frame_id: "base_link"
+    # Keep IMU data parameters but disable any TF broadcasting
+
+# Local position
+/**/local_position:
+  ros__parameters:
+    tf.send: false
+    tf.send_fcu: false
+
+# Disable all other TF broadcasting explicitly
+/**/setpoint_attitude:
+  ros__parameters:
+    tf.listen: false
+
+/**/setpoint_position:
+  ros__parameters:
+    tf.listen: false
+
+/**/setpoint_raw:
+  ros__parameters:
+    # Empty to disable
+
+/**/vision_pose:
+  ros__parameters:
+    tf.listen: false
+
+/**/mocap:
+  ros__parameters:
+    use_tf: false

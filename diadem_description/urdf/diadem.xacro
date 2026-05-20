@@ -9,8 +9,8 @@
 <link name="base_link">
   <inertial>
     <origin xyz="-0.000442563326493991 0.0005036289593653383 0.2715469717743787" rpy="0 0 0"/>
-    <mass value="46.062115064028625"/>
-    <inertia ixx="2.183508" iyy="3.678419" izz="5.108526" ixy="0.008815" iyz="-0.001381" ixz="-0.002933"/>
+    <mass value="120.00"/>
+    <inertia ixx="5.68" iyy="9.60" izz="13.28" ixy="0.0228" iyz="-0.0036" ixz="-0.0076"/>
   </inertial>
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -19,10 +19,10 @@
     </geometry>
     <material name="silver"/>
   </visual>
-  <collision>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+  <collision name="base_link_collision">
+    <origin xyz="0 0 0.25" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://diadem_description/meshes/base_link.dae" scale="0.001 0.001 0.001"/>
+      <box size="0.5 0.5 0.3"/>
     </geometry>
   </collision>
 </link>
@@ -40,10 +40,10 @@
     </geometry>
     <material name="silver"/>
   </visual>
-  <collision>
-    <origin xyz="0.28 0.3 -0.18" rpy="0 0 0"/>
+  <collision name="RR_wheel_1_collision">
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
     <geometry>
-      <mesh filename="package://diadem_description/meshes/RR_wheel_1.dae" scale="0.001 0.001 0.001"/>
+      <cylinder radius="0.18" length="0.08"/>
     </geometry>
   </collision>
 </link>
@@ -61,10 +61,32 @@
     </geometry>
     <material name="silver"/>
   </visual>
-  <collision>
-    <origin xyz="-0.28 -0.3 -0.18" rpy="0 0 0"/>
+  <collision name="FL_wheel_1_collision">
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
     <geometry>
-      <mesh filename="package://diadem_description/meshes/FL_wheel_1.dae" scale="0.001 0.001 0.001"/>
+      <cylinder radius="0.18" length="0.08"/>
+    </geometry>
+  </collision>
+</link>
+
+<!-- Add this LiDAR link after the existing links -->
+<link name="lidar">
+  <inertial>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <mass value="0.5"/>
+    <inertia ixx="0.001" iyy="0.001" izz="0.001" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <cylinder radius="0.05" length="0.06"/>
+    </geometry>
+    <material name="black"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <cylinder radius="0.05" length="0.06"/>
     </geometry>
   </collision>
 </link>
@@ -82,10 +104,10 @@
     </geometry>
     <material name="silver"/>
   </visual>
-  <collision>
-    <origin xyz="0.28 -0.3 -0.18" rpy="0 0 0"/>
+  <collision name="RL_wheel_1_collision">
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
     <geometry>
-      <mesh filename="package://diadem_description/meshes/RL_wheel_1.dae" scale="0.001 0.001 0.001"/>
+      <cylinder radius="0.18" length="0.08"/>
     </geometry>
   </collision>
 </link>
@@ -103,15 +125,16 @@
     </geometry>
     <material name="silver"/>
   </visual>
-  <collision>
-    <origin xyz="-0.28 0.3 -0.18" rpy="0 0 0"/>
+  <collision name="FR_wheel_1_collision">
+    <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
     <geometry>
-      <mesh filename="package://diadem_description/meshes/FR_wheel_1.dae" scale="0.001 0.001 0.001"/>
+      <cylinder radius="0.18" length="0.08"/>
     </geometry>
   </collision>
 </link>
 
 <link name="imu_link"/>
+<link name="camera_link"/>
 <joint name="imu_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 0.0 0.310"/>
     <parent link="base_link"/>
@@ -138,6 +161,12 @@
   <child link="RL_wheel_1"/>
   <axis xyz="-0.0 1.0 0.0"/>
 </joint>
+<!-- Add this LiDAR joint after the existing joints -->
+<joint name="lidar_joint" type="fixed">
+  <origin xyz="0.0 0.0 0.64" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="lidar"/>
+</joint>
 
 <joint name="FR_wheel_joint" type="continuous">
   <origin xyz="0.28 -0.3 0.18" rpy="0 0 0"/>
@@ -146,7 +175,11 @@
   <axis xyz="-0.0 1.0 -0.0"/>
 </joint>
 
-
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="0 0 0.94" rpy="0.0 0.45 0"/>
+  </joint>
 
 
 
