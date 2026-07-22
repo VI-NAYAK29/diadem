@@ -66,7 +66,7 @@ endif()
 
 #############################################################################
 # option
-option( BUILD_SHARED_LIBS "Build shared libraries." OFF)
+option( BUILD_SHARED_LIBS "Build shared libraries." ON)
 option( BUILD_EXAMPLES "Build Example." ON)
 option( BUILD_CSHARP "Build CSharp." OFF)
 option( BUILD_TEST "Build Test." OFF)
