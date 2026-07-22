@@ -217,6 +217,14 @@ else(ROS_EDITION STREQUAL "ROS2")
   #---------------------------------------------------------------------------------------
   add_definitions(-DBUILDING_ROS2)
 
+  if(NOT DEFINED HUMBLE_ROS)
+    if(DEFINED ENV{ROS_DISTRO})
+      set(HUMBLE_ROS $ENV{ROS_DISTRO})
+    else()
+      set(HUMBLE_ROS "humble")
+    endif()
+  endif()
+
   # find dependencies
   # uncomment the following section in order to fill in
   # further dependencies manually.
