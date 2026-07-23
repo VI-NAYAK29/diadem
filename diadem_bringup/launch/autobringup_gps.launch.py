@@ -50,6 +50,7 @@ def generate_launch_description():
     )
 
     def resolve_world_path(context, *args, **kwargs):
+        import shutil
         sim_time = use_sim_time.perform(context)
         if sim_time.lower() in ['false', '0']:
             return []
@@ -62,7 +63,15 @@ def generate_launch_description():
         else:
             world_full_path = os.path.join(pkg_gazebo, 'worlds', w_name)
         
-        cmd = ['gz', 'sim', '-r']
+        gz_path = shutil.which('gz')
+        ign_path = shutil.which('ign')
+        if gz_path:
+            cmd = [gz_path, 'sim', '-r']
+        elif ign_path:
+            cmd = [ign_path, 'gazebo', '-r']
+        else:
+            cmd = ['gz', 'sim', '-r']
+
         if is_headless.lower() in ['true', '1']:
             cmd.append('-s')
         cmd.extend([world_full_path, '--verbose', '1'])
