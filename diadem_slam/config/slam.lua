@@ -41,7 +41,7 @@ TRAJECTORY_BUILDER_2D.max_range = 25.
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 30.
 TRAJECTORY_BUILDER_2D.use_imu_data = true
 
--- ─── Real-time Correlative Scan Matcher ────────────────────────────────────
+-- Real-time Correlative Scan Matcher
 -- Wide window: at >1 m/s the robot can shift 30+ cm between match cycles;
 -- the correlative pre-matcher must cover that entire range or Ceres starts
 -- from a bad initial guess and drift is never recovered.
@@ -52,7 +52,7 @@ TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 0.01
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight    = 0.01
 
--- ─── Ceres Scan Matcher ─────────────────────────────────────────────────────
+-- Ceres Scan Matcher
 -- High occupied_space_weight: force the solver to snap scan points onto
 -- existing submap cells.  This is the primary knob for instantaneous
 -- translational snap-back on a fast robot.
@@ -62,7 +62,7 @@ TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 35.
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 1.
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight    = 10.
 
--- ─── Motion Filter ──────────────────────────────────────────────────────────
+-- Motion Filter
 -- At 1 m/s+ the robot covers 2 cm in 20 ms.  Time-gate at 20 ms so a
 -- correction fires on virtually every LiDAR sweep regardless of linear speed.
 TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds    = 0.02
@@ -70,13 +70,13 @@ TRAJECTORY_BUILDER_2D.motion_filter.max_distance_meters = 0.01
 TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians   = math.rad(0.05)
 TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
--- ─── Submaps ────────────────────────────────────────────────────────────────
+-- Submaps
 -- Smaller submaps (60 scans instead of default 100): loop-closure constraints
 -- are generated much sooner after a region is revisited, correcting drift
 -- before it accumulates.
 TRAJECTORY_BUILDER_2D.submaps.num_range_data = 60
 
--- ─── Pose Graph ─────────────────────────────────────────────────────────────
+-- Pose Graph
 -- Low min_score: any partial feature overlap generates a constraint.
 POSE_GRAPH.constraint_builder.min_score = 0.50
 POSE_GRAPH.constraint_builder.global_localization_min_score = 0.55
