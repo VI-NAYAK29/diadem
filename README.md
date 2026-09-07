@@ -1,6 +1,6 @@
 
 # Diadem Pixhawk Release
-## ROS2 Humble Release
+## ROS2 Jazzy Release
 
 ![diadem Logo](https://github.com/rigbetellabs/rbl_docs/blob/main/img/logo.png)
 
@@ -39,6 +39,10 @@ For inquiries and collaboration opportunities, reach out to RigBetel Labs.
    - [**1.1 diadem_description**](#11-diadem_description)
    - [**1.2 diadem_firmware**](#12-diadem_firmware)
    - [**1.3 diadem_gazebo**](#13-diadem_gazebo)
+   - [**1.4 diadem_bringup**](#14-diadem_bringup)
+   - [**1.5 diadem_navigation**](#15-diadem_navigation)
+   - [**1.6 diadem_slam**](#16-diadem_slam)
+   - [**1.7 diadem_odom**](#17-diadem_odom)
 - [**2. Simulation**](#2-simulation)
 - [**3. Real Robot Instructions**](#3-real-robot-instructions)
   - [**3.1 Initial Wifi Setup**](#31-initial-wifi-setup)
@@ -67,41 +71,70 @@ For inquiries and collaboration opportunities, reach out to RigBetel Labs.
 
 ### 1.1 diadem_description
 
-Holds the robot description including URDF, STL, config files for RVIZ, and Gazebo.
+Holds the robot description including URDF, Xacro, STL/DAE meshes, config files for RViz2, and Gazebo.
 
-| File               | Description                                 | Nodes Launched                    |
-|--------------------|---------------------------------------------|-----------------------------------|
-| [display.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_description/launch/display.launch.py)         | Launches Gazebo simulation with all necessary plugins and state publishers, along with RViz.                                                                                                                                     | robot_state_publisher, joint_state_publisher, rviz2, gazebo_ros                     |
-|[rviz.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_description/launch/rviz.launch.py)           | Launches RViz2 with necessary configuration.                                                                                                                                                                                      | rviz2 with configured settings                                                         |
-| [state_publisher.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_description/launch/state_publisher.launch.py) | Launches state publishers for the robot, including robot_state_publisher and joint_state_publisher nodes.                                                                                                                                                                                         | robot_state_publisher, joint_state_publisher                                            |
+| File                                                                                                                                    | Description                                                                                     | Nodes Launched                                                     |
+| -----------------------------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------------------------------------| --------------------------------------------------------------------|
+| [display.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_description/launch/display.launch.py)                 | Launches Gazebo simulation with all necessary plugins and state publishers, along with RViz2.   | robot_state_publisher, joint_state_publisher, rviz2, ros_gz_bridge |
+| [rviz.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_description/launch/rviz.launch.py)                       | Launches RViz2 with necessary configuration.                                                    | rviz2 with configured settings                                     |
+| [state_publisher.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_description/launch/state_publisher.launch.py) | Launches state publishers for the robot, including robot_state_publisher and static transforms. | robot_state_publisher                                              |
 
 
 ### 1.2 diadem_firmware
 
 Provides sensor and actuation topics.
 
-| File                | Description                                             | Nodes Launched                |
-|---------------------|---------------------------------------------------------|-------------------------------|
-| [bringup.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_firmware/launch/bringup.launch.py) | Launches the joy node and auto joy node for complete joystick and waypoint-based control of the robot using a joystick.                                                                                  | joy_node, auto_joy_teleop                   |
-| [hubble_scripts.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_firmware/launch/hubble_scripts.launch.py)  | Provides feedback to the controller about network data and navigation data, including network_pub node and goal_status_publisher node.                                                              | network_publisher (freezed binaries), goal_status_publisher (freezed binaries) | |
-| [mavros_launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_firmware/launch/mavros_launch.py)   | Launches Mavros Node                                                                                                                                      | Mavros                 |
-| [micro_ros.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_firmware/launch/micro_ros.launch.py)   | Launches MicroROS                                                                                                                                      | Micro ROS                 |
+| File                                                                                                                               | Description                                                                                                                            | Nodes Launched                           |
+| ------------------------------------------------------------------------------------------------------------------------------------| ----------------------------------------------------------------------------------------------------------------------------------------| ------------------------------------------|
+| [bringup.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_firmware/launch/bringup.launch.py)               | Launches the joy node and auto joy node for complete joystick and waypoint-based control of the robot using a joystick.                | joy_node, auto_joy_teleop                |
+| [hubble_scripts.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_firmware/launch/hubble_scripts.launch.py) | Provides feedback to the controller about network data and navigation data, including network_pub node and goal_status_publisher node. | network_publisher, goal_status_publisher |
+| [mavros_launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_firmware/launch/mavros_launch.py)                 | Launches MAVROS node for Pixhawk communication.                                                                                        | mavros_node                              |
+| [micro_ros.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_firmware/launch/micro_ros.launch.py)           | Launches micro-ROS Agent for ESP32 microcontroller communication.                                                                      | micro_ros_agent                          |
+
 ### 1.3 diadem_gazebo
-Simulation environment for tortoisebotpromax in Gazebo.
+Simulation environment for Diadem in Gazebo Sim (Harmonic).
 
 | File                | Description                                             | Nodes Launched                |
 |---------------------|---------------------------------------------------------|-------------------------------|
-|  [gazebo.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_gazebo/launch/gazebo.launch.py)      | Launches a Gazebo environment with a specified world, along with the gazebo_ros node.                                    | gazebo_ros node                                         |
-|  [spawn_robot.launch.py](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_gazebo/launch/spawn_robot.launch.py) | Launches a Gazebo environment with a specified world and spawns the robot with necessary plugins using gazebo_ros node. | gazebo_ros node, robot_state_publisher, joint_state_publisher, gazebo_controllers |
+|  [gazebo.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_gazebo/launch/gazebo.launch.py)      | Launches a Gazebo Sim environment with a specified world, along with ros_gz_bridge nodes.                                    | gz_sim, ros_gz_bridge (core, scan)                                         |
+|  [spawn_robot.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_gazebo/launch/spawn_robot.launch.py) | Launches Gazebo Sim, spawns the Diadem robot model, and connects ros_gz_bridge. | gz_sim create, robot_state_publisher, ros_gz_bridge |
+
+### 1.4 diadem_bringup
+Complete bringup orchestration for both simulation and real hardware.
+
+| File                                                                                                                        | Description                                                                                                                          | Nodes Launched                                                    |
+| -----------------------------------------------------------------------------------------------------------------------------| --------------------------------------------------------------------------------------------------------------------------------------| -------------------------------------------------------------------|
+| [autobringup.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_bringup/launch/autobringup.launch.py) | Unified launch file that launches simulation (or hardware drivers), state publishers, Cartographer/AMCL SLAM, Nav2 stack, and RViz2. | gazebo, state_publisher, cartographer / amcl, nav2_bringup, rviz2 |
+
+### 1.5 diadem_navigation
+Navigation2 configurations and launches for autonomous path planning and trajectory execution.
+
+| File                | Description                                             | Nodes Launched                |
+|---------------------|---------------------------------------------------------|-------------------------------|
+| [navigation.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_navigation/launch/navigation.launch.py) | Launches Nav2 controller server (MPPI), planner server (SmacPlanner), recoveries, and bt_navigator. | controller_server, planner_server, bt_navigator, recoveries_server |
+
+### 1.6 diadem_slam
+2D SLAM configurations using Google Cartographer and SLAM Toolbox.
+
+| File                | Description                                             | Nodes Launched                |
+|---------------------|---------------------------------------------------------|-------------------------------|
+| [cartographer.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_slam/launch/cartographer.launch.py) | Launches Cartographer 2D SLAM node and occupancy grid generator. | cartographer_node, cartographer_occupancy_grid_node |
+
+### 1.7 diadem_odom
+Odometry estimation and sensor fusion nodes.
+
+| File                | Description                                             | Nodes Launched                |
+|---------------------|---------------------------------------------------------|-------------------------------|
+| [ekf.launch.py](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_odom/launch/ekf.launch.py) | Launches robot_localization Extended Kalman Filter (EKF). | ekf_filter_node |
 
 
 ## 2. Simulation
-For simulation, below process needs to be done in laptop/PC with ROS2 humble installed in it.
+For simulation, below process needs to be done in laptop/PC with ROS 2 Jazzy and Gazebo Harmonic installed in it.
 
 Clone the diadem repository into your workspace:
 ```bash
 cd ~/ros2_ws/src  # Assuming ros2_ws is the name of the workspace
-git clone -b humble-pixhawk-release https://github.com/rigbetellabs/diadem.git
+git clone -b ros2-jazzy https://github.com/rigbetellabs/diadem.git
 ```
 
 Install dependent packages:
@@ -115,18 +148,24 @@ Build the workspace:
 
 ```bash
 cd ~/ros2_ws
-colcon build
+colcon build --symlink-install
 ```  
 
-To Launch simulation:
+To launch Gazebo simulation:
 ```bash
 ros2 launch diadem_gazebo spawn_robot.launch.py 
 ```
+
+To launch complete simulation with autonomous navigation and SLAM:
+```bash
+ros2 launch diadem_bringup autobringup.launch.py use_sim_time:=True exploration:=True
+```
+
 The gazebo world looks like this:
 
 ![playground](https://github.com/rigbetellabs/rbl_docs/blob/main/img/playground.png)
 
-Now you can teleop the robot by publishing the msgs on /cmd_vel topic
+Now you can teleop the robot by publishing messages on `/cmd_vel` topic, or set navigation goals in RViz2.
 ## 3. Real Robot Instruction
 
 > [!IMPORTANT]
@@ -348,7 +387,7 @@ We have provided the API Script along with the package to enable the GPS navigat
 
 `Navigate to diadem_firmware/scripts/waypoint_navigation.py to get access to the API`
 
-[Link to Documentation](https://github.com/rigbetellabs/diadem/blob/humble-pixhawk-release/diadem_firmware/scripts/readme.md)
+[Link to Documentation](https://github.com/rigbetellabs/diadem/blob/ros2-jazzy/diadem_firmware/scripts/readme.md)
 
 > [!IMPORTANT]
 > To enable Obstacle avoidance in GPS navigation using Realsense d435i, follow the instructions provided [here](https://ardupilot.org/copter/docs/common-realsense-depth-camera.html)
@@ -453,7 +492,7 @@ ros2 topic pub -1 /pid/control std_msgs/msg/Int32 "{data: 1}"
 
 ### `/cmd_vel`
 - **Type:** `geometry_msgs/Twist`
-- **Description:** Provides velocity commands in linear and angular dimensions.The `/cmd_vel` topic is responsible for receiving velocity commands for the robot. These commands can be generated by teleoperation or the `move_base` module, instructing the robot on how fast to move in different directions.
+- **Description:** Provides velocity commands in linear and angular dimensions. The `/cmd_vel` topic is responsible for receiving velocity commands for the robot. These commands can be generated by teleoperation or the `Nav2` navigation stack, instructing the robot on how fast to move in different directions.
 
 ### `/ecu/restart`
 > [!WARNING]

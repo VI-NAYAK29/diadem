@@ -27,7 +27,7 @@ def generate_launch_description():
         else:
             world_full_path = os.path.join(worlds_dir, world_name)
         
-        cmd = ['ign', 'gazebo', '-r']
+        cmd = ['gz', 'sim', '-r']
         if is_headless.lower() in ['true', '1']:
             cmd.append('-s')
         cmd.extend([world_full_path, '--verbose', '1'])
@@ -37,7 +37,7 @@ def generate_launch_description():
             output='screen'
         )]
 
-    ign_gazebo = OpaqueFunction(function=resolve_world_path)
+    gz_sim = OpaqueFunction(function=resolve_world_path)
 
     # Core Parameter Bridge (odom, imu, clock, cmd_vel)
     gz_bridge_core = Node(
@@ -76,9 +76,9 @@ def generate_launch_description():
             description='World file name (relative to worlds/) or absolute path. '
                         'Options: nav2_test_world.sdf | open_field.sdf | room2.sdf'
         ),
-        # Make all local .sdf/.world files discoverable by ign gazebo
-        SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', worlds_dir),
-        ign_gazebo,
+        # Make all local .sdf/.world files discoverable by gz sim (Harmonic/Jazzy)
+        SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', worlds_dir),
+        gz_sim,
         gz_bridge_core,
         gz_bridge_scan,
     ])

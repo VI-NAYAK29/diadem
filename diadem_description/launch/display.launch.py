@@ -48,9 +48,9 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}],
     )
 
-    ign_gazebo = ExecuteProcess(
+    gz_sim = ExecuteProcess(
         condition=IfCondition(use_sim_time),
-        cmd=['ign', 'gazebo', '-r', world_path, '--verbose', '1'],
+        cmd=['gz', 'sim', '-r', world_path, '--verbose', '1'],
         output='screen'
     )
 
@@ -94,7 +94,7 @@ def generate_launch_description():
             name='rvizconfig', default_value=default_rviz_config_path,
             description='Absolute path to rviz config file'),
 
-        ign_gazebo,
+        gz_sim,
         gz_bridge_core,
         gz_bridge_scan,
         joint_state_publisher_node,

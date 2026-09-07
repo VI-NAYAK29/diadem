@@ -43,14 +43,33 @@ def generate_launch_description():
                                 parameters=[parameter_file],
                                 namespace='/',
                                 )
+
     tf2_node = Node(package='tf2_ros',
                     executable='static_transform_publisher',
                     name='static_tf_pub_laser',
                     arguments=['0', '0', '0.02','0', '0', '0', '1','base_link','laser_frame'],
                     )
 
+    # Laser filter node: removes ghost points from gaps/doorways
+    # Subscribes to /scan, publishes clean data to /scan_filtered
+    # Point your navigation stack at /scan_filtered instead of /scan
+    filter_config = os.path.join(share_dir, 'params', 'laser_filter.yaml')
+    laser_filter_node = Node(
+        package='laser_filters',
+        executable='scan_to_scan_filter_chain',
+        name='laser_filter',
+        output='screen',
+        parameters=[{'params_file': filter_config}],
+        remappings=[
+            ('scan',          '/scan'),
+            ('scan_filtered', '/scan_filtered'),
+        ],
+    )
+
     return LaunchDescription([
         params_declare,
         driver_node,
         tf2_node,
+        laser_filter_node,
     ])
+

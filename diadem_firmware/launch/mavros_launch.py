@@ -9,13 +9,13 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'gcs_url': 'udp-b://:14550@',
-                'fcu_url': '/dev/pixhawk:921600'
+                'fcu_url': '/dev/ttyACM0:921600'
             }]
         ),
-        Node(
-            package='diadem_firmware',
-            executable='pixhawk_to_cmd.pyc',
-            output='screen'
-        ),
+       Node(
+           package='diadem_firmware',
+           executable='pixhawk_to_cmd.py',
+           output='screen'
+       ),
 
     ])

@@ -39,7 +39,7 @@ def generate_launch_description():
             actions=[
                 Node(
                     package='diadem_firmware',
-                    executable='pixhawk_to_cmd.pyc',
+                    executable='pixhawk_to_cmd.py',
                     name='pixhawk_to_cmd',
                     output='screen'
                 )
